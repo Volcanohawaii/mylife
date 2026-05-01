@@ -1,165 +1,434 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>운명공학: 전생과 내세 리포트</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* 🚨 대표님의 오리지널 스타일 완벽 복구 */
-        :root {
-            --primary: #2c3e50; /* 진한 남색 */
-            --accent: #e74c3c;  /* 붉은색 포인트 */
-            --bg: #f8f9fa;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Destiny Lab : 전생과 내세</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data:; style-src * 'unsafe-inline';">
+  <style>
+    /* 🎨 1. 대표님 오리지널 껍데기 (디자인 완벽 유지) */
+    * { box-sizing: border-box; }
+   :root { --bg: #F0EDE9; --paper: #FFFFFF; --primary: #243447; --accent: #9A8467; --text: #000000; --border: #D1CDC5; }
+    body { 
+    font-family: 'Pretendard', sans-serif; 
+    background-color: var(--bg); 
+    color: var(--text); 
+    margin: 0; 
+    display: flex; 
+    flex-direction: column;      
+    align-items: center;         
+    justify-content: flex-start; 
+    min-height: 100vh; 
+    padding: 60px 20px 20px 20px; 
+    overflow-x: hidden; 
+    position: relative; 
+}
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: radial-gradient(circle at center, rgba(255, 255, 255, 1) 1.2px, transparent 2px), radial-gradient(circle at center, rgba(154, 132, 103, 0.9) 2px, transparent 4px); background-size: 60px 60px, 140px 140px; background-position: 0 0, 30px 30px; opacity: 1; animation: twinkle 4s ease-in-out infinite alternate; }
+    @keyframes twinkle { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+    .container { width: 100%; max-width: 480px; position: relative; z-index: 1; }
+    .lang-toggle { 
+    position: absolute; 
+    top: 20px;     
+    right: 20px; 
+    display: flex; 
+    gap: 15px; 
+    z-index: 100;  
+}
+    .flag { font-size: 1.6rem; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+    .flag.active { opacity: 1; transform: scale(1.2); }
+    .report-card { background: var(--paper); padding: 55px 35px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); border: 1px solid var(--border); text-align: center; position: relative; animation: fadeIn 0.8s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .official-seal { position: absolute; top: 25px; right: 25px; width: 65px; height: 65px; border: 2px double var(--accent); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Gowun Batang'; font-size: 0.7rem; font-weight: 700; opacity: 0.5; transform: rotate(12deg); }
+    h1 { font-family: 'Gowun Batang'; font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; }
+    .summary-line { font-family: 'Pretendard', sans-serif; font-size: 0.95rem; color: var(--text); margin-bottom: 30px; line-height: 1.7; text-align: justify; text-justify: inter-character; }
+    .tab-content { text-align: justify; text-justify: inter-character; line-height: 1.8; font-size: 0.95rem; }
+    .section-wrap { margin-bottom: 30px; }
+    .section-title { font-family: 'Gowun Batang'; font-size: 1rem; color: var(--accent); display: block; margin-bottom: 12px; font-weight: 700; border-bottom: 1px solid #F0F0F0; }
+    .info-box { background: #F9F8F6; padding: 18px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
+    .warning-box { background: #FFF5F5; padding: 15px; border-radius: 8px; font-size: 0.85rem; color: #C0392B; margin-top: 25px; }
+    .tabs { display: flex; border-bottom: 1px solid #EEE; margin: 25px 0; }
+    .tab-btn { flex: 1; padding: 12px 0; border: none; background: none; cursor: pointer; font-size: 0.85rem; color: #BBB; font-family: 'Gowun Batang'; }
+    .tab-btn.active { color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); }
+    .btn-action { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 1rem; }
+    .hidden { display: none; }
+    input { width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-bottom: 1px solid #DDD; font-size: 1.1rem; outline: none; background: transparent; }
+    .visitor-counter { margin-top: 25px; font-size: 0.75rem; color: #AAA; font-family: 'Gowun Batang'; border-top: 1px solid #F5F5F5; padding-top: 15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #loading-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(240, 237, 233, 0.96); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+    #loading-overlay.show { opacity: 1; pointer-events: auto; }
 
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--bg);
-            color: #333;
-            margin: 0; padding: 20px; line-height: 1.6;
-        }
-
-        .container {
-            max-width: 500px; margin: 0 auto;
-            background: #fff; padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
-        h1 { text-align: center; font-weight: 900; font-size: 1.5rem; color: var(--primary); margin-bottom: 30px; }
-        
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
-        
-        button {
-            width: 100%; padding: 15px; background: var(--primary); color: white;
-            border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
-        }
-
-        /* 🚨 전생/내세 탭 버튼 디자인 (기존 톤앤매너 유지) */
-        #resultArea { display: none; margin-top: 20px; }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
-        .tab-btn {
-            flex: 1; text-align: center; padding: 10px; cursor: pointer;
-            font-weight: 700; color: #999; background: none; border: none; font-size: 1rem;
-        }
-        .tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
-
-        .info-box { padding: 25px; border: 1px solid #eee; border-radius: 15px; background: #fff; }
-        .main-desc { font-size: 0.9rem; color: #333; margin-top: 10px; }
-    </style>
+    .info-box > div:first-child > span { font-size: 1.15rem !important; }
+    .info-box b { font-size: 0.95rem !important; }
+    .info-box .main-desc { font-size: 0.9rem !important; text-align: justify !important; word-break: break-all !important; }
+    .info-box .sub-desc { font-size: 0.8rem !important; color: #555 !important; line-height: 1.4 !important; }
+  </style>
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart="return false">
+  <div id="loading-overlay">
+    <div style="background:white; padding:20px; border-radius:15px; text-align:center; width:100%; max-width:340px;">
+      <div class="official-seal" style="position:static; margin:0 auto 20px auto;">분석중</div>
+      <h2 style="font-family:'Gowun Batang'; color:var(--primary); font-size:1.1rem;">운명의 시간을 넘나드는 중...</h2>
+      <div style="border:3px solid #f3f3f3; border-top:3px solid var(--accent); border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite; margin:0 auto 20px auto;"></div>
+    </div>
+  </div>
 
-<div class="container">
-    <h1>Revealing your past and future.<br><span style="font-size: 0.8rem; font-weight: 400; color: #777;">[운명공학: 전생·내세 식별]</span></h1>
-
-    <div id="inputArea">
-        <div class="input-group">
-            <label>이름 (Name)</label>
-            <input type="text" id="userName" placeholder="이름을 입력하세요">
-        </div>
-        <div class="input-group">
-            <label>생년월일 (Birth Date)</label>
-            <input type="date" id="birthDate">
-        </div>
-        <div class="input-group">
-            <label>태어난 시간 (Birth Time)</label>
-            <select id="birthTime">
-                <option value="unknown">시간 모름 (Unknown)</option>
-                <script>for(let i=0; i<24; i++) document.write(`<option value="${i}">${i}시</option>`);</script>
-            </select>
-        </div>
-        <button onclick="startAnalysis()">운명 기록 식별하기</button>
+  <div class="container">
+    <div class="lang-toggle">
+      <span class="flag active" id="flag-ko" onclick="setLang('ko')">🇰🇷</span>
+      <span class="flag" id="flag-en" onclick="setLang('en')">🇺🇸</span>
     </div>
 
-    <div id="resultArea">
-        <div class="tabs">
-            <button class="tab-btn active" id="tabPast" onclick="switchTab('past')">전생 기록</button>
-            <button class="tab-btn" id="tabFuture" onclick="switchTab('future')">내세 예측</button>
-        </div>
+    <div class="report-card" id="view-home">
+      <div class="official-seal">전생/내세<br>분석실</div>
+      <h1 id="ui-title">시공간 운명 데이터 분석</h1>
+      <p id="ui-desc" style="font-size:0.85rem; color:#888; margin-bottom:25px;">
+          81수리 체계 성명의 파동과 탄생 시계열 지표를 바탕으로 당신의 전생과 내세 기록이 식별됩니다.
+      </p>
 
-        <div class="info-box" id="displayBox">
-            </div>
-        
-        <button onclick="location.reload()" style="background:#eee; color:#333; margin-top:20px;">다시 분석하기</button>
+      <div class="input-group" style="margin-bottom: 25px;">
+          <input type="text" id="userName" placeholder="성함" autocomplete="name">
+          <input type="text" id="userBirth" placeholder="양력 8자리 19901208" inputmode="numeric" autocomplete="bday">
+          <select id="userHour" style="width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-bottom: 1px solid #DDD; font-size: 1.1rem; outline: none; background: transparent; color: #555;">
+              <option value="12" id="opt-hour-label">생시(시간) 선택</option>
+              <option value="0">자시 (23:30~01:29)</option>
+              <option value="2">축시 (01:30~03:29)</option>
+              <option value="4">인시 (03:30~05:29)</option>
+              <option value="6">묘시 (05:30~07:29)</option>
+              <option value="8">진시 (07:30~09:29)</option>
+              <option value="10">사시 (09:30~11:29)</option>
+              <option value="12">오시 (11:30~13:29)</option>
+              <option value="14">미시 (13:30~15:29)</option>
+              <option value="16">신시 (15:30~17:29)</option>
+              <option value="18">유시 (17:30~19:29)</option>
+              <option value="20">술시 (19:30~21:29)</option>
+              <option value="22">해시 (21:30~23:29)</option>
+          </select>
+          <button class="btn-action" id="ui-btn" onclick="startAnalysis()">리포트 생성하기</button>
+      </div>
+      <div class="visitor-counter">과거와 미래를 확인한 영혼: <span id="visit-count">...</span>명</div>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <div class="report-card hidden" id="view-result">
+      <div class="official-seal">정식기록본</div>
+      <h1 id="dynamic-title">시공간 운명 리포트</h1>
+      <div class="summary-line" id="dynamic-summary">분석 중...</div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('past', this)">전생 기록</button>
+        <button class="tab-btn" onclick="switchTab('next', this)">내세 예약</button>
+      </div>
+      
+      <div id="reportDetail"></div>
+      <button class="btn-action" style="margin-top:30px; background:white; color:#444; border:1px solid #DDD;" onclick="copyLink()">Copy Link</button>
+      <p onclick="location.href=location.pathname" style="font-size:0.7rem; color:#CCC; margin-top:20px; cursor:pointer;">Reset</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
 <script>
-    let reportData = null;
+    let currentLang = 'ko';
+    
+    // 필수 다국어 변수 (간략화)
+    const i18n = {
+        ko: { pastDest: "전생 활동 중심지", pastJob: "전생의 역할", pastHomework: "전생의 과업", nextDest: "내세 영혼 거점", nextObj: "내세의 소명", nextMission: "내세 핵심 과업" },
+        en: { pastDest: "Past Activity Center", pastJob: "Past Role", pastHomework: "Past Mission", nextDest: "Future Soul Domain", nextObj: "Future Calling", nextMission: "Future Core Task" }
+    };
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.flag').forEach(f => f.classList.remove('active'));
+        document.getElementById(`flag-${lang}`).classList.add('active');
+        
+        // 결과창이 열려있다면 탭 다시 렌더링
+        if(!document.getElementById('view-result').classList.contains('hidden')) {
+            const activeTab = document.querySelector('.tab-btn.active');
+            if(activeTab) activeTab.click();
+        }
+    }
+
+    // 방문자 카운터 (유지)
+    async function updateCounter() { 
+      const el = document.getElementById('visit-count'); 
+      if (!el) return;
+      try { 
+        const res = await fetch('https://api.counterapi.dev/v1/volcanohawaii-lab/past-counter/up'); 
+        if (res.ok) {
+          const data = await res.json(); 
+          if (data && typeof data.count === "number") { el.innerText = Number(data.count).toLocaleString(); }
+        }
+      } catch (e) { el.innerText = "8,248"; } 
+    }
+    updateCounter();
 
     function startAnalysis() {
-        const name = document.getElementById('userName').value;
-        const date = document.getElementById('birthDate').value;
-
-        if(!name || !date) {
-            alert("이름과 생년월일을 입력해주세요!");
-            return;
-        }
-
-        // 오행 점수 계산 (나중에 대표님 진짜 로직으로 교체)
-        const scores = [Math.random()*50, Math.random()*50, Math.random()*50, Math.random()*50, Math.random()*50];
-        const elements = ["목(木)", "화(火)", "토(土)", "금(金)", "수(水)"];
-        const signature = elements[scores.indexOf(Math.max(...scores))];
-        const num81 = name.length * 7;
-
-        // script.js에 있는 함수를 불러와서 데이터 받아오기
-        reportData = getLifeData(num81, signature, 'ko', scores);
-
-        // 입력창 숨기고 결과창 띄우기
-        document.getElementById('inputArea').style.display = 'none';
-        document.getElementById('resultArea').style.display = 'block';
-        
-        // 기본으로 '전생' 탭 먼저 보여주기
-        switchTab('past');
+      const n = document.getElementById('userName').value.trim();
+      const b = document.getElementById('userBirth').value.trim().replace(/\D/g, '');
+      if (!n || b.length !== 8) { alert(currentLang === 'ko' ? "정보를 확인해주세요." : "Check info."); return; }
+      
+      document.getElementById('loading-overlay').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('loading-overlay').classList.remove('show');
+        processData(n, b);
+      }, 2000);
     }
 
-    // 🚨 탭을 눌렀을 때 화면을 바꿔주는 핵심 로직
-    function switchTab(mode) {
-        // 버튼 색깔 바꾸기
-        document.getElementById('tabPast').classList.remove('active');
-        document.getElementById('tabFuture').classList.remove('active');
-        
-        if(mode === 'past') {
-            document.getElementById('tabPast').classList.add('active');
-            drawContent(reportData.past, '[식별된 전생 기록]', '📍 전생 활동 중심지', '💼 전생의 직업', '📜 전생의 과업');
-        } else {
-            document.getElementById('tabFuture').classList.add('active');
-            drawContent(reportData.future, '[예측된 내세 기록]', '📍 영혼의 도착지', '💼 미래의 소명', '📜 내세의 과업');
-        }
+    function getHangulOnset(char) {
+      const code = char.charCodeAt(0) - 44032;
+      if (code < 0 || code > 11171) return char;
+      return ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'][Math.floor(code / 588)];
     }
 
-    // 🚨 화면에 글씨 그리는 함수 (대표님 기존 디자인 그대로 사용)
-    function drawContent(data, titleLabel, destLabel, jobLabel, hwLabel) {
-        document.getElementById('displayBox').innerHTML = `
-            <div style="text-align:center; margin-bottom:25px; border-bottom:1px solid #F0F0F0; padding-bottom:20px;">
-                <b style="color:var(--accent); display:block; margin-bottom:5px;">${titleLabel}</b>
-                <span style="font-weight:800; font-size:1.4rem; color:#000;">${data.name}</span><br>
-                <span style="font-size:0.85rem; color:#666; display:inline-block; margin-top:5px;">"${data.nameDesc}"</span>
-            </div>
-            <div style="margin-bottom:20px;">
-                <b style="color:var(--accent); display:block; margin-bottom:5px;">${destLabel}</b>
-                <div class="main-desc">${data.dest}</div>
-            </div>
-            <div style="margin-bottom:20px;">
-                <b style="color:var(--accent); display:block; margin-bottom:5px;">${jobLabel}</b>
-                <div class="main-desc">${data.job}</div>
-            </div>
-            <div>
-                <b style="color:var(--accent); display:block; margin-bottom:5px;">${hwLabel}</b>
-                <div class="main-desc" style="line-height:1.7;">
-                    ${data.desc}<br><br>
-                    <span style="color:var(--primary); font-weight:700;">[핵심 과업]</span><br>
-                    ${data.homework}
+    // ❤️ 3. 심장 (가장 중요한 오행 계산기 - 군더더기 싹 뺀 버전)
+    function processData(name, birth) {
+        const hour = parseInt(document.getElementById('userHour').value) || 12;
+        const year = parseInt(birth.substring(0, 4));
+        const mm = parseInt(birth.substring(4, 6));
+        const dd = parseInt(birth.substring(6, 8));
+        
+        // [1] 정밀 절기 보정
+        const dateVal = mm * 100 + dd;
+        let offset = 0;
+        if (year % 4 === 0 && !(year % 100 === 0 && year % 400 !== 0)) { if (mm <= 2) offset = -1; }
+
+        let solarMonth;
+        if (dateVal < 105 + offset) solarMonth = 22;
+        else if (dateVal < 120 + offset) solarMonth = 23;
+        else if (dateVal < 204 + offset) solarMonth = 0;
+        else if (dateVal < 219 + offset) solarMonth = 1;
+        else if (dateVal < 305 + offset) solarMonth = 2;
+        else if (dateVal < 321 + offset) solarMonth = 3;
+        else if (dateVal < 405 + offset) solarMonth = 4;
+        else if (dateVal < 420 + offset) solarMonth = 5;
+        else if (dateVal < 505 + offset) solarMonth = 6;
+        else if (dateVal < 521 + offset) solarMonth = 7;
+        else if (dateVal < 606 + offset) solarMonth = 8;
+        else if (dateVal < 621 + offset) solarMonth = 9;
+        else if (dateVal < 707 + offset) solarMonth = 10;
+        else if (dateVal < 723 + offset) solarMonth = 11;
+        else if (dateVal < 807 + offset) solarMonth = 12;
+        else if (dateVal < 823 + offset) solarMonth = 13;
+        else if (dateVal < 908 + offset) solarMonth = 14;
+        else if (dateVal < 923 + offset) solarMonth = 15;
+        else if (dateVal < 1008 + offset) solarMonth = 16;
+        else if (dateVal < 1023 + offset) solarMonth = 17;
+        else if (dateVal < 1107 + offset) solarMonth = 18;
+        else if (dateVal < 1122 + offset) solarMonth = 19;
+        else if (dateVal < 1207 + offset) solarMonth = 20;
+        else if (dateVal < 1222 + offset) solarMonth = 21;
+        else solarMonth = 22;
+
+        // [2] 운명공학 심층 명리 엔진
+        // (script.js에 포함된 getIlju와 elements 변수를 사용합니다)
+        const iljuData = getIlju(year, mm, dd); 
+        let sc = [0, 0, 0, 0, 0];
+
+        const elMap = { "목":0, "화":1, "토":2, "금":3, "수":4, "甲":0, "乙":0, "丙":1, "丁":1, "戊":2, "己":2, "庚":3, "辛":3, "壬":4, "癸":4 };
+        
+        const ilganIdx = elMap[iljuData.el] !== undefined ? elMap[iljuData.el] : 2;
+        sc[ilganIdx] += 35;
+
+        const termToEl = [4, 4, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 2, 3, 3, 3, 3, 3, 2, 4, 4, 4, 4, 2];
+        const monthElIdx = termToEl[solarMonth];
+        sc[monthElIdx] += 45; 
+
+        const yearStemIdx = [3, 3, 4, 4, 0, 0, 1, 1, 2, 2][year % 10]; 
+        sc[yearStemIdx] += 10;
+        
+        const ybElMap = {0:3, 1:3, 2:2, 3:4, 4:4, 5:2, 6:0, 7:0, 8:2, 9:1, 10:1, 11:2}; 
+        const yearBranchIdx = ybElMap[year % 12];
+        sc[yearBranchIdx] += 15;
+
+        const hourEls = [4, 2, 0, 0, 2, 1, 1, 2, 3, 3, 2, 4]; 
+        const hourIdx = hourEls[Math.floor(hour / 2) % 12];
+        sc[hourIdx] += 20;
+
+        if (monthElIdx === ilganIdx) {
+            sc[ilganIdx] += 15;
+        } else if (monthElIdx === (ilganIdx + 4) % 5) {
+            sc[ilganIdx] += 10;
+        } else if (monthElIdx === (ilganIdx + 3) % 5) {
+            sc[monthElIdx] += 10;
+        }
+
+        // [3] 후천운 파동 및 수리격
+        const choStrokes = [2, 4, 2, 3, 6, 5, 4, 4, 8, 2, 4, 1, 3, 6, 4, 3, 4, 4, 3];
+        const jungStrokes = [2, 3, 3, 4, 2, 3, 3, 4, 2, 4, 5, 3, 3, 2, 4, 5, 3, 3, 1, 2, 1];
+        const jongStrokes = [0, 2, 4, 4, 2, 5, 5, 3, 5, 7, 9, 9, 7, 9, 9, 8, 4, 4, 6, 2, 4, 1, 3, 4, 3, 4, 4, 3];
+        const charStrokes = [];
+
+        for (let i = 0; i < name.length; i++) {
+            const char = name[i];
+            const code = char.charCodeAt(0) - 44032;
+            let stroke = 0;
+            if (code >= 0 && code <= 11171) {
+                stroke = choStrokes[Math.floor(code / 588)] + jungStrokes[Math.floor((code % 588) / 28)] + jongStrokes[code % 28];
+            } else { stroke = 1; }
+            charStrokes.push(stroke);
+
+            const onset = /[a-zA-Z]/.test(char) ? char.toUpperCase() : getHangulOnset(char);
+            const el = hangulElements[onset] || alphabetElements[onset] || "토"; 
+            const idx = elements.indexOf(el);
+            if (idx !== -1) sc[idx] += 30;
+        }
+
+        let num81 = 1;
+        if (charStrokes.length >= 2) {
+            let first = charStrokes[0];
+            let second = charStrokes[1];
+            let third = charStrokes.length >= 3 ? charStrokes[2] : 1; 
+            let won = second + third;      
+            let hyung = first + second;    
+            let lee = first + third;       
+            let jung = first + second + third; 
+            let coreStrokes = (won * hyung) + lee + jung;
+            num81 = coreStrokes % 81;
+            if (num81 === 0) num81 = 81;
+        } else if (charStrokes.length === 1) {
+            num81 = charStrokes[0] % 81;
+            if (num81 === 0) num81 = 81;
+        }
+
+        const suriToElIdx = [4, 0, 0, 1, 1, 2, 2, 3, 3, 4];
+        const suriElIdx = suriToElIdx[num81 % 10];
+        sc[suriElIdx] += 40; 
+
+        // [4] 데이터 바인딩 (전생/내세를 구하기 위한 필수 요소만 추출)
+        const maxFinalScore = Math.max(...sc);
+        let strongElIdx = sc.indexOf(maxFinalScore);
+        if (sc[ilganIdx] === maxFinalScore) strongElIdx = ilganIdx;
+        const strongEl = elements[strongElIdx];
+
+        const sIdx = sc.map((s, i) => i).sort((a, b) => sc[a] - sc[b]); 
+        const weakEl = elements[sIdx[0]];
+
+        // 🚨 방대한 현생 로직(300직무 등)은 모두 버리고 가방만 쌉니다!
+        const sessionData = { 
+            name, birth, num81, 
+            strongEl: strongEl, lackEls: [weakEl], 
+            birthMonth: mm 
+        };
+
+        localStorage.setItem('destinySession', JSON.stringify(sessionData));
+        
+        // 화면 전환
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        
+        // 요약 렌더링 후 기본 탭(전생) 띄우기
+        renderSummary(sessionData);
+        switchTab('past', document.querySelectorAll('.tab-btn')[0]);
+    }
+
+    function renderSummary(data) {
+        document.getElementById('dynamic-summary').innerHTML = `
+            <div class="info-box" style="background:#F9F8F6; border:1px solid #EEE; border-radius:12px; padding:18px; text-align:left; color:#000; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #000; padding-bottom:8px; margin-bottom:5px;">
+                    <span style="font-weight:800;">TIME_SPACE_LAB</span>
+                    <span style="color:var(--accent); font-weight:800;">CODE: ${String(data.num81).padStart(2, '0')}</span>
                 </div>
-            </div>
-        `;
+                <div style="font-size:0.85rem; color:#555;">본 리포트는 성명 파동과 명리 데이터를 통해 시공간을 역추적한 결과입니다.</div>
+            </div>`;
     }
+
+    // 🗂️ 4. 탭 전환 (외부 script.js의 데이터 사용)
+    function switchTab(mode, element) {
+        const body = document.getElementById('reportDetail');
+        const session = JSON.parse(localStorage.getItem('destinySession'));
+        if (!body || !session) return;
+
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(t => t.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        } else {
+            const targetTab = document.querySelector(`.tab-btn[onclick*="${mode}"]`);
+            if (targetTab) targetTab.classList.add('active');
+        }
+
+        if (mode === 'past') {
+            const p = getPastLifeData(session.num81, session.strongEl, currentLang);
+            const era = (currentLang === 'ko' ? eraPastKo : eraPastEn)[session.num81 % (currentLang === 'ko' ? eraPastKo.length : eraPastEn.length)];
+            const region = (currentLang === 'ko' ? regionPastKo : regionPastEn)[(session.num81 + session.birthMonth) % (currentLang === 'ko' ? regionPastKo.length : regionPastEn.length)];
+
+            body.innerHTML = `
+                <div class="tab-content">
+                    <div class="info-box" style="background:#fff; padding:25px; border-left:none;">
+                        <div style="text-align:center; margin-bottom:25px; border-bottom:1px solid #F0F0F0; padding-bottom:20px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">${currentLang === 'ko' ? '[식별된 전생 기록]' : '[Identified Past Record]'}</b>
+                            <span style="font-weight:800; font-size:1.3rem;">${(currentLang === 'ko' ? makePastNameKo : makePastNameEn)(session.num81, session.strongEl, session.lackEls[0], session.birthMonth)}</span>
+                        </div>
+                        
+                        <div style="margin-bottom:25px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">📍 ${i18n[currentLang].pastDest}</b>
+                            <div class="main-desc">${era}, ${region}</div>
+                        </div>
+                        
+                        <div style="margin-bottom:25px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">💼 ${i18n[currentLang].pastJob}</b>
+                            <div class="main-desc">
+                                ${p.job}<br>
+                                <span class="sub-desc">${p.desc}</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">📜 ${i18n[currentLang].pastHomework}</b>
+                            <div class="main-desc">${p.homework}</div>
+                        </div>
+                    </div>
+                </div>`;
+        } else if (mode === 'next') {
+            const rData = getNextLifeData(session.num81, session.strongEl, currentLang);        
+            const era = (currentLang === 'ko' ? eraNextKo : eraNextEn)[session.num81 % (currentLang === 'ko' ? eraNextKo.length : eraNextEn.length)];
+            const region = (currentLang === 'ko' ? regionNextKo : regionNextEn)[(session.num81 + session.birthMonth) % (currentLang === 'ko' ? regionNextKo.length : regionNextEn.length)];
+
+            body.innerHTML = `
+                <div class="tab-content">
+                    <div class="info-box" style="background:#fff; padding:25px; border-left:none;">
+                        <div style="text-align:center; margin-bottom:25px; border-bottom:1px solid #F0F0F0; padding-bottom:20px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">${currentLang === 'ko' ? '[예약된 내세 정보]' : '[Reserved Afterlife Info]'}</b>
+                            <span style="font-weight:800; font-size:1.3rem;">${(currentLang === 'ko' ? makeNextLifeNameKo : makeNextLifeNameEn)(session.num81, session.strongEl, session.lackEls[0], session.birthMonth)}</span>
+                        </div>
+                        
+                        <div style="margin-bottom:25px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">🌌 ${i18n[currentLang].nextDest}</b>
+                            <div class="main-desc">${era}, ${region}</div>
+                        </div>
+                        
+                        <div style="margin-bottom:25px;">
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">💼 ${i18n[currentLang].nextObj}</b>
+                            <div class="main-desc">
+                                ${rData.job}<br>
+                                <span class="sub-desc">${rData.desc}</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <b style="color:var(--accent); display:block; margin-bottom:5px;">📜 ${i18n[currentLang].nextMission}</b>
+                            <div class="main-desc">${rData.mission}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+    }
+
+    function copyLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert(currentLang === 'ko' ? "복사가 완료되었습니다! ✨" : "Link copied! ✨");
+        });
+    }
+    window.onload = () => { setLang('ko'); };
 </script>
+
+<footer style="margin-top: 30px; padding: 20px 20px; text-align: center; border-top: 1px solid #EEE; background-color: #FAFAFA;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <p style="color: #555; font-size: 0.85rem; font-weight: 700; margin: 0; letter-spacing: 0.05em;">
+            © 2026 <span style="color: var(--accent, #9A8467);">DESTINY LAB</span>. All rights reserved.
+        </p>
+    </div>
+</footer>
 
 </body>
 </html>
