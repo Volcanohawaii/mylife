@@ -1,10 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>전생 테스트 사이트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운명공학: 전생과 내세 리포트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 🚨 대표님의 오리지널 스타일 완벽 복구 */
+        :root {
+            --primary: #2c3e50; /* 진한 남색 */
+            --accent: #e74c3c;  /* 붉은색 포인트 */
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0; padding: 20px; line-height: 1.6;
+        }
+
+        .container {
+            max-width: 500px; margin: 0 auto;
+            background: #fff; padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 { text-align: center; font-weight: 900; font-size: 1.5rem; color: var(--primary); margin-bottom: 30px; }
+        
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
+        
+        button {
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
+        }
+
+        /* 🚨 전생/내세 탭 버튼 디자인 (기존 톤앤매너 유지) */
+        #resultArea { display: none; margin-top: 20px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab-btn {
+            flex: 1; text-align: center; padding: 10px; cursor: pointer;
+            font-weight: 700; color: #999; background: none; border: none; font-size: 1rem;
+        }
+        .tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
+
+        .info-box { padding: 25px; border: 1px solid #eee; border-radius: 15px; background: #fff; }
+        .main-desc { font-size: 0.9rem; color: #333; margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <h1>공사 중! 여기가 새로운 전생 사이트입니다.</h1>
+
+<div class="container">
+    <h1>Revealing your past and future.<br><span style="font-size: 0.8rem; font-weight: 400; color: #777;">[운명공학: 전생·내세 식별]</span></h1>
+
+    <div id="inputArea">
+        <div class="input-group">
+            <label>이름 (Name)</label>
+            <input type="text" id="userName" placeholder="이름을 입력하세요">
+        </div>
+        <div class="input-group">
+            <label>생년월일 (Birth Date)</label>
+            <input type="date" id="birthDate">
+        </div>
+        <div class="input-group">
+            <label>태어난 시간 (Birth Time)</label>
+            <select id="birthTime">
+                <option value="unknown">시간 모름 (Unknown)</option>
+                <script>for(let i=0; i<24; i++) document.write(`<option value="${i}">${i}시</option>`);</script>
+            </select>
+        </div>
+        <button onclick="startAnalysis()">운명 기록 식별하기</button>
+    </div>
+
+    <div id="resultArea">
+        <div class="tabs">
+            <button class="tab-btn active" id="tabPast" onclick="switchTab('past')">전생 기록</button>
+            <button class="tab-btn" id="tabFuture" onclick="switchTab('future')">내세 예측</button>
+        </div>
+
+        <div class="info-box" id="displayBox">
+            </div>
+        
+        <button onclick="location.reload()" style="background:#eee; color:#333; margin-top:20px;">다시 분석하기</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    let reportData = null;
+
+    function startAnalysis() {
+        const name = document.getElementById('userName').value;
+        const date = document.getElementById('birthDate').value;
+
+        if(!name || !date) {
+            alert("이름과 생년월일을 입력해주세요!");
+            return;
+        }
+
+        // 오행 점수 계산 (나중에 대표님 진짜 로직으로 교체)
+        const scores = [Math.random()*50, Math.random()*50, Math.random()*50, Math.random()*50, Math.random()*50];
+        const elements = ["목(木)", "화(火)", "토(土)", "금(金)", "수(水)"];
+        const signature = elements[scores.indexOf(Math.max(...scores))];
+        const num81 = name.length * 7;
+
+        // script.js에 있는 함수를 불러와서 데이터 받아오기
+        reportData = getLifeData(num81, signature, 'ko', scores);
+
+        // 입력창 숨기고 결과창 띄우기
+        document.getElementById('inputArea').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+        
+        // 기본으로 '전생' 탭 먼저 보여주기
+        switchTab('past');
+    }
+
+    // 🚨 탭을 눌렀을 때 화면을 바꿔주는 핵심 로직
+    function switchTab(mode) {
+        // 버튼 색깔 바꾸기
+        document.getElementById('tabPast').classList.remove('active');
+        document.getElementById('tabFuture').classList.remove('active');
+        
+        if(mode === 'past') {
+            document.getElementById('tabPast').classList.add('active');
+            drawContent(reportData.past, '[식별된 전생 기록]', '📍 전생 활동 중심지', '💼 전생의 직업', '📜 전생의 과업');
+        } else {
+            document.getElementById('tabFuture').classList.add('active');
+            drawContent(reportData.future, '[예측된 내세 기록]', '📍 영혼의 도착지', '💼 미래의 소명', '📜 내세의 과업');
+        }
+    }
+
+    // 🚨 화면에 글씨 그리는 함수 (대표님 기존 디자인 그대로 사용)
+    function drawContent(data, titleLabel, destLabel, jobLabel, hwLabel) {
+        document.getElementById('displayBox').innerHTML = `
+            <div style="text-align:center; margin-bottom:25px; border-bottom:1px solid #F0F0F0; padding-bottom:20px;">
+                <b style="color:var(--accent); display:block; margin-bottom:5px;">${titleLabel}</b>
+                <span style="font-weight:800; font-size:1.4rem; color:#000;">${data.name}</span><br>
+                <span style="font-size:0.85rem; color:#666; display:inline-block; margin-top:5px;">"${data.nameDesc}"</span>
+            </div>
+            <div style="margin-bottom:20px;">
+                <b style="color:var(--accent); display:block; margin-bottom:5px;">${destLabel}</b>
+                <div class="main-desc">${data.dest}</div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <b style="color:var(--accent); display:block; margin-bottom:5px;">${jobLabel}</b>
+                <div class="main-desc">${data.job}</div>
+            </div>
+            <div>
+                <b style="color:var(--accent); display:block; margin-bottom:5px;">${hwLabel}</b>
+                <div class="main-desc" style="line-height:1.7;">
+                    ${data.desc}<br><br>
+                    <span style="color:var(--primary); font-weight:700;">[핵심 과업]</span><br>
+                    ${data.homework}
+                </div>
+            </div>
+        `;
+    }
+</script>
+
 </body>
 </html>
