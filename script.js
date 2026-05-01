@@ -559,177 +559,347 @@ function getPastLifeData(num, signature, lang, scores) {
     }
 }
 
-// 4. 내세 (Next Life) 예측 엔진
+// ============================================================================
+// 4. 내세 (Next Life) 예측 엔진 (100종 데이터 + 근미래/먼미래 시간대 분리)
 // ============================================================================
 function getNextLifeData(num, signature, lang) {
+    // 💡 [데이터 확장] 오행별 20개 (0~9번: 근미래 / 10~19번: 먼 미래) -> 총 100개
     const futurePoolKo = {
         "목(木)": [
-            { role: "행성 테라포밍 설계자", job: "개척 행성의 바이오 돔에서 멸종 위기종을 복원하는 전문가" },
-            { role: "뉴럴 플랜트 가디언", job: "인간의 뇌파와 식물을 연결해 산소를 생성하는 시스템 관리자" },
-            { role: "가상 현실 정원사", job: "디지털 세계에 영혼이 안식할 수 있는 자연 지대를 구축하는 자" },
-            { role: "바이오 나노 공학자", job: "세포의 재생 능력을 극대화하여 인류의 수명을 연장하는 선구자" },
-            { role: "대기 정화 기술자", job: "오염된 지구의 대기를 숲의 기운으로 다시 정화하는 임무" },
-            { role: "은하계 씨앗 보관소장", job: "모든 행성의 생명 코드를 보관하고 전파하는 최종 보루" },
-            { role: "감정 수목 치유사", job: "사람의 슬픔을 양분 삼아 꽃을 피우는 식물을 기르는 힐러" },
-            { role: "양자 생태 학자", job: "차원 간의 생태적 균형을 연구하여 우주 공존을 돕는 학자" },
-            { role: "태초의 숲 전령", job: "지구의 기억을 품은 나무를 개척지로 운반하는 인도자" },
-            { role: "라이프 시퀀스 설계자", job: "새로운 생명체가 태어날 환경을 완벽하게 세팅하는 설계관" }
+            // 근미래 (Near Future)
+            { role: "수직 농장 마스터", job: "식량 난을 극복하기 위해 거대 도심형 수직 숲을 통제하는 생태학자" },
+            { role: "AI-인간 공생 조율사", job: "인공지능과 인류 사이의 윤리적, 감정적 연결고리를 가꾸는 전문가" },
+            { role: "유전자 방주 관리인", job: "기후 위기로 사라져가는 지구 생물들의 유전자 씨앗을 보존하는 파수꾼" },
+            { role: "탄소 역행 공학자", job: "대기 중의 탄소를 포집하여 생태계의 비료로 치환하는 환경 설계자" },
+            { role: "바이오-메디컬 디자이너", job: "세포 재생 기술로 인류의 질병을 근절하고 수명을 연장하는 선구자" },
+            { role: "해양 숲 복원가", job: "산성화된 바다 밑바닥에 거대한 산호 숲을 다시 일구는 해양 생물학자" },
+            { role: "도시 신경망 플래너", job: "도시 전체의 에너지가 유기체처럼 순환하도록 돕는 인프라 설계자" },
+            { role: "에코 돔 건축가", job: "극한의 기후에서도 자생 가능한 친환경 폐쇄형 돔을 건설하는 공학자" },
+            { role: "동물 신경 해독가", job: "동물들의 뇌파를 언어로 번역하여 생태계의 요구를 수용하는 연구원" },
+            { role: "바이오닉 의수 공학자", job: "인간의 신경과 완벽히 융합되는 생체 인공 기관을 빚어내는 장인" },
+            // 먼 미래 (Distant Future)
+            { role: "행성 테라포밍 설계자", job: "황무지 행성의 바이오 돔에서 대기와 생태계를 창조하는 조물주" },
+            { role: "뉴럴 플랜트 가디언", job: "인간의 뇌파와 거대 식물군을 연결해 행성의 산소를 통제하는 관리자" },
+            { role: "가상 현실 정원사", job: "디지털 공간에 업로드된 영혼들이 안식할 수 있는 자연 지대를 구축하는 자" },
+            { role: "은하계 씨앗 보관소장", job: "수많은 행성의 생명 코드를 우주선에 싣고 전파하는 최종 보루" },
+            { role: "감정 수목 치유사", job: "사람의 슬픔을 양분 삼아 빛나는 꽃을 피우는 치유의 식물을 기르는 힐러" },
+            { role: "양자 생태 학자", job: "서로 다른 차원 간의 생태적 균형을 연구하여 다차원 공존을 돕는 학자" },
+            { role: "태초의 숲 전령", job: "지구의 고대 기억을 품은 세계수(Tree)를 새로운 개척지로 운반하는 인도자" },
+            { role: "라이프 시퀀스 설계자", job: "외계 행성에 새로운 종의 생명체가 태어날 환경을 완벽하게 세팅하는 설계관" },
+            { role: "성운 식물 재배자", job: "성간 가스를 흡수하여 우주 공간에서 자라나는 빛의 식물을 가꾸는 이" },
+            { role: "코스믹 DNA 직조공", job: "우주 환경에 적응할 수 있도록 인류의 유전자를 진화시키는 생명 공학자" }
         ],
         "화(火)": [
-            { role: "에너지 주파수 조율사", job: "다차원 문명의 에너지를 하나로 묶어 증폭시키는 전도사" },
-            { role: "홀로그램 계몽가", job: "빛의 파동으로 잊혀진 인류의 지혜를 전파하는 미래의 교사" },
-            { role: "성운 동력 발굴가", job: "별이 폭발할 때 생기는 에너지를 문명의 동력으로 바꾸는 주역" },
-            { role: "차원간 빛의 전령", job: "서로 다른 차원에 메시지를 빛의 속도로 전달하는 통신 전문가" },
-            { role: "양자 태양 관리관", job: "스스로 빛을 내지 못하는 행성에 인공 태양을 띄우는 관리자" },
-            { role: "감정 데이터 조각가", job: "인간의 열정을 시각적인 빛의 예술로 승화시키는 거장" },
-            { role: "초고속 항로 설계자", job: "빛의 굴절을 이용해 성간 이동 시간을 단축하는 네비게이터" },
-            { role: "정신 가속 최적화원", job: "인류의 지능을 한 단계 업그레이드하는 에너지 관리자" },
-            { role: "지성 아카이브 수호자", job: "모든 문명의 찬란한 성취를 빛의 입자로 저장하는 기록관" },
-            { role: "은하 연합 홍보대사", job: "화려한 카리스마로 행성 간의 문화적 통합을 이끄는 리더" }
+            // 근미래 (Near Future)
+            { role: "핵융합 동력 제어관", job: "인공 태양 발전소에서 무한한 청정 에너지를 생산하고 통제하는 기술자" },
+            { role: "홀로그램 총괄 디렉터", job: "증강현실로 대중의 감각을 자극하고 트렌드를 지휘하는 미디어 거장" },
+            { role: "성층권 셔틀 파일럿", job: "대기권을 돌파하여 궤도 정거장을 잇는 초고속 항공망의 개척자" },
+            { role: "디지털 문화 계몽가", job: "사이버 공간에서 잊혀져 가는 인문학적 열정과 영감을 전파하는 교사" },
+            { role: "AI 윤리 철학자", job: "통제력을 잃어가는 기술 발전 속에서 인류의 뜨거운 도덕성을 수호하는 자" },
+            { role: "플라즈마 무기 통제관", job: "초고열 에너지를 다루며 국가 방위의 최전선을 지키는 안보 책임자" },
+            { role: "군집 드론 안무가", job: "수만 대의 드론으로 밤하늘에 찬란한 예술과 메시지를 수놓는 연출가" },
+            { role: "태양광 그리드 마스터", job: "전 지구적 궤도 우산망을 통해 태양 에너지를 분배하는 인프라 수장" },
+            { role: "뇌-컴퓨터 인터페이스 디자이너", job: "인간의 생각과 기계를 빛의 속도로 연결하는 감각 설계자" },
+            { role: "메타버스 아이돌 제작자", job: "가상과 현실을 넘나들며 대중을 열광시키는 새로운 우상을 빚어내는 프로듀서" },
+            // 먼 미래 (Distant Future)
+            { role: "에너지 주파수 조율사", job: "다차원 문명의 에너지를 하나로 묶어 거대하게 증폭시키는 전도사" },
+            { role: "성운 동력 발굴가", job: "초신성이 폭발할 때 생기는 에너지를 문명의 동력으로 바꾸는 주역" },
+            { role: "차원간 빛의 전령", job: "서로 다른 은하계에 메시지를 빛의 속도로 전달하는 통신 전문가" },
+            { role: "양자 태양 관리관", job: "스스로 빛을 내지 못하는 외곽 행성에 인공 태양을 띄우는 관리자" },
+            { role: "감정 데이터 조각가", job: "인간의 강렬한 열정을 시각적인 빛의 예술로 승화시키는 거장" },
+            { role: "초고속 항로 설계자", job: "빛의 굴절과 웜홀을 이용해 성간 이동 시간을 단축하는 네비게이터" },
+            { role: "정신 가속 최적화원", job: "초인류의 지능과 직관을 한 단계 업그레이드하는 에너지 관리자" },
+            { role: "지성 아카이브 수호자", job: "모든 문명의 찬란한 성취를 소멸하지 않는 빛의 입자로 저장하는 기록관" },
+            { role: "은하 연합 홍보대사", job: "압도적인 카리스마와 언변으로 행성 간의 문화적 통합을 이끄는 리더" },
+            { role: "항성 코어 추출자", job: "죽어가는 별의 중심핵에서 에너지를 추출해 은하를 밝히는 극한의 모험가" }
         ],
         "토(土)": [
-            { role: "화성 기반 인프라 국장", job: "개척지의 토양을 안정시키고 거주 구역을 구축하는 총책임자" },
-            { role: "시공간 데이터 보관소장", job: "우주의 방대한 정보를 묵직하게 지켜내는 최종 관리자" },
-            { role: "중력 밸런스 조정관", job: "행성의 중력을 조절하여 인류가 살기 가장 좋은 환경을 만드는 이" },
-            { role: "차원 통용 화폐 발행자", job: "은하 전체에서 신뢰받는 경제 체계를 구축하는 금융 가이드" },
-            { role: "우주 연합 법무 장관", job: "흔들리지 않는 원칙으로 행성 간의 법적 갈등을 심판하는 자" },
-            { role: "행성간 지각 공학자", job: "죽어가는 행성의 지질을 안정시켜 생명의 기틀을 다시 다지는 자" },
-            { role: "지구 유적 보존 관리인", job: "미래 문명 속에서 고대 지구의 유적을 발굴하고 보호하는 이" },
-            { role: "안전 거주구 설계자", job: "어떤 우주 재난에도 견딜 수 있는 견고한 쉘터를 만드는 설계관" },
-            { role: "다국적 연합 기록관", job: "모든 행성의 역사를 왜곡 없이 공정하게 기록하는 역사가" },
-            { role: "대륙간 수직도시 관리자", job: "지구의 좁은 영토를 극대화하여 평화로운 거주지를 관리하는 이" }
+            // 근미래 (Near Future)
+            { role: "기후 위기 조정관", job: "극단적인 기상 이변 속에서 국가 간의 자원 분쟁을 묵직하게 중재하는 이" },
+            { role: "메가시티 인프라 총장", job: "수천만 명이 거주하는 수직 도시의 물리적, 사회적 기반을 닦는 행정가" },
+            { role: "소행성 채굴 기지장", job: "지구 궤도 밖에서 희귀 광물을 캐내어 인류의 경제 기반을 지탱하는 리더" },
+            { role: "디지털 유산 보존가", job: "서버 손실에 대비하여 인류의 중요 데이터를 영구적인 매체로 보존하는 자" },
+            { role: "기본소득 경제 설계자", job: "노동이 사라진 AI 시대에 인류가 공존할 수 있는 경제 토대를 닦는 학자" },
+            { role: "달 식민지 행정관", job: "지구를 떠나 달에 세워진 첫 거주지의 질서와 규칙을 확립하는 지도자" },
+            { role: "지구 공학 감독관", job: "망가진 지구의 지각과 해류를 인공적으로 조절하여 생존권을 수호하는 자" },
+            { role: "분산 금융(DeFi) 통치자", job: "중앙 은행이 무너진 시대에 신뢰 기반의 새로운 화폐 시스템을 구축하는 이" },
+            { role: "합성 식량 배급 책임자", job: "토양이 오염된 시대에 대체 식량을 배양하여 인류의 굶주림을 막는 관리자" },
+            { role: "사이버네틱스 복지관", job: "기계 신체를 이식받지 못한 소외 계층을 사회 시스템 안으로 포용하는 구원자" },
+            // 먼 미래 (Distant Future)
+            { role: "화성 기반 인프라 국장", job: "붉은 먼지 행성의 토양을 안정시키고 견고한 거주 구역을 구축하는 총책임자" },
+            { role: "시공간 데이터 보관소장", job: "우주의 방대한 역사 정보를 어떠한 공격에도 뚫리지 않게 지켜내는 관리자" },
+            { role: "중력 밸런스 조정관", job: "인공 행성의 중력을 조절하여 인류가 살기 가장 좋은 환경으로 빚어내는 이" },
+            { role: "차원 통용 화폐 발행자", job: "은하 연합 전체에서 신뢰받는 절대적인 경제 체계를 구축하는 금융 가이드" },
+            { role: "우주 연합 법무 장관", job: "흔들리지 않는 원칙으로 행성 간의 얽힌 법적 갈등을 묵묵히 심판하는 자" },
+            { role: "행성간 지각 공학자", job: "붕괴되어 가는 행성의 지질을 결합하여 생명의 기틀을 다시 다지는 자" },
+            { role: "지구 유적 보존 관리인", job: "먼 우주 시대에 버려진 고대 지구의 유적을 발굴하고 신성하게 보호하는 이" },
+            { role: "안전 거주구 설계자", job: "초신성 폭발이나 우주 재난에도 견딜 수 있는 궁극의 쉘터를 만드는 설계관" },
+            { role: "다국적 연합 기록관", job: "모든 행성의 역사를 왜곡이나 사견 없이 공정하고 무겁게 기록하는 역사가" },
+            { role: "다이슨 스피어 토대 구축자", job: "항성을 둘러싸는 거대 인공 구조물의 뼈대를 설계하고 완성하는 건축가" }
         ],
         "금(金)": [
-            { role: "행성 방어 시스템 사령관", job: "정밀한 판단으로 외부의 위협으로부터 문명을 지키는 파수꾼" },
-            { role: "사이버 법률 심판관", job: "가상과 현실 사이의 범죄를 단호하게 처단하는 정의의 화신" },
-            { role: "양자 보안 설계자", job: "해킹이 불가능한 단단한 정보 보호 체계를 구축하는 기술자" },
-            { role: "희귀 광물 탐사대장", job: "우주 깊은 곳에서 문명의 동력이 될 금속을 찾아내는 탐험가" },
-            { role: "안드로이드 윤리 감독", job: "기계 지성이 넘지 말아야 할 선을 결정하고 감찰하는 심판관" },
-            { role: "차원 게이트 수호자", job: "허가되지 않은 차원 이동을 차단하고 경계를 수호하는 파수꾼" },
-            { role: "강철 의지 멘토", job: "인류가 겪는 정신적 나약함을 강한 정신력으로 치유하는 리더" },
-            { role: "초전도체 소자 제작자", job: "미래 기술의 핵심이 되는 금속 소자를 정밀하게 빚는 장인" },
-            { role: "우주 함대 감사관", job: "모든 시스템의 규율 준수 여부를 예리하게 파악하는 감사 전문가" },
-            { role: "결단력 증폭 훈련관", job: "중요한 순간의 결단력을 높여주는 신경 훈련 시스템 운영자" }
+            // 근미래 (Near Future)
+            { role: "사이버 보안 사령관", job: "국가 인프라를 노리는 치명적인 해킹 공격을 방어하고 역추적하는 파수꾼" },
+            { role: "자율 살상 무기 심판관", job: "AI 무기의 사용을 통제하고 생명 윤리의 최종 결정권을 쥔 차가운 집행자" },
+            { role: "유전자 조작 감찰관", job: "불법적인 신체 개조와 복제 인간 창조를 단호하게 추적하고 처단하는 수사관" },
+            { role: "궤도 폐기물 청소부", job: "위험천만한 우주 쓰레기를 요격하여 궤도의 안전을 지키는 정밀 타격수" },
+            { role: "심해 자원 채굴 감독관", job: "가장 차갑고 가혹한 압력 속에서 심해의 자원을 캐내는 냉철한 리더" },
+            { role: "알고리즘 편향성 판사", job: "세상을 통제하는 AI의 논리적 오류와 차별을 날카롭게 도려내는 법관" },
+            { role: "생체 기계 이식 외과의", job: "인간의 신체를 강철 기계로 완벽하고 오차 없이 결합시키는 정밀 전문의" },
+            { role: "나노 로봇 통제관", job: "인체에 투입된 수억 개의 나노 로봇을 지휘하여 질병을 암살하는 의학자" },
+            { role: "궤도 엘리베이터 공학자", job: "지구와 우주를 잇는 수만 킬로미터의 강철 케이블을 오차 없이 관리하는 이" },
+            { role: "기후 협약 집행관", job: "탄소 배출을 어긴 거대 기업과 국가를 무자비하게 제재하는 철혈의 관리자" },
+            // 먼 미래 (Distant Future)
+            { role: "행성 방어 시스템 사령관", job: "소행성 충돌과 외계의 위협으로부터 문명의 방어막을 지키는 군사 책임자" },
+            { role: "사이버 법률 심판관", job: "가상과 현실을 넘나드는 고도의 범죄를 단호하게 처단하는 정의의 화신" },
+            { role: "양자 보안 설계자", job: "어떠한 양자 컴퓨터로도 해킹이 불가능한 단단한 정보 보호 체계를 구축하는 기술자" },
+            { role: "희귀 광물 탐사대장", job: "우주 깊은 곳에서 함대의 동력이 될 궁극의 금속을 찾아내는 얼음 같은 탐험가" },
+            { role: "안드로이드 윤리 감독", job: "기계 지성이 인간을 넘어서지 못하도록 선을 긋고 감찰하는 엄격한 심판관" },
+            { role: "차원 게이트 수호자", job: "허가되지 않은 차원 이동을 빔 무기로 차단하고 우주의 경계를 수호하는 파수꾼" },
+            { role: "강철 의지 멘토", job: "초인류가 겪는 정신적 나약함을 파괴적일 만큼 강인한 훈련으로 치유하는 리더" },
+            { role: "초전도체 소자 제작자", job: "미래 기술의 심장이 되는 절대 영도의 금속 소자를 정밀하게 빚어내는 장인" },
+            { role: "우주 함대 감사관", job: "은하 연합의 모든 시스템 규율 준수 여부를 예리하게 파헤치는 무결점 감사 전문가" },
+            { role: "결단력 증폭 훈련관", job: "지휘관들이 가장 치명적인 순간에 주저 없이 결단하도록 돕는 신경 시스템 운영자" }
         ],
         "수(水)": [
-            { role: "뉴럴 링크 정화 전문가", job: "오염된 인류의 무의식 네트워크를 맑게 씻어내는 정화자" },
-            { role: "딥스페이스 항해사", job: "심오한 통찰로 블랙홀 너머의 길을 찾아내는 선구적 도선사" },
-            { role: "정보 파동 분석가", job: "우주 전체에 흩어진 데이터 입자들을 모아 지혜를 완성하는 이" },
-            { role: "무의식 치료 상담사", job: "사람의 깊은 내면에 잠긴 트라우마를 유연하게 치유하는 힐러" },
-            { role: "행성간 수자원 조율사", job: "물 부족 행성에 수자원을 공급하는 거대 흐름의 관리자" },
-            { role: "꿈의 세계 가이드", job: "인류가 잠든 사이 무의식 속에서 안전하게 유영하도록 돕는 자" },
-            { role: "투명성 감사 위원", job: "정보의 흐름이 막힘없이 맑게 유지되는지 감시하는 투명성 수호자" },
-            { role: "데이터 복구 고고학자", job: "사라진 고대 지구의 서버를 복구하여 잃어버린 기억을 찾는 이" },
-            { role: "고차원의 교육가", job: "고정관념을 깨고 창의적인 사고를 흐르게 하는 미래의 스승" },
-            { role: "심연의 진리 전파자", job: "우주의 끝에서 발견한 근원적 비밀을 지혜로 승화시켜 전하는 이" }
+            // 근미래 (Near Future)
+            { role: "빅데이터 오라클", job: "끝없이 쏟아지는 데이터의 바다에서 인류가 나아갈 미래의 패턴을 읽어내는 예언자" },
+            { role: "해저 돔 시티 설계자", job: "해수면 상승으로 물에 잠긴 지구에서 인류의 심해 거주지를 구축하는 건축가" },
+            { role: "냉동 수면 해방 치료사", job: "긴 냉동 수면에서 깨어난 자들의 시대적 이질감을 물처럼 부드럽게 치유하는 힐러" },
+            { role: "AI 알고리즘 철학자", job: "차가운 데이터 속에 인문학적 지혜와 인간의 본질을 융합하는 사상가" },
+            { role: "가상 신분 추적자", job: "디지털 바다에 위장된 채 숨어 있는 사이버 범죄자의 흔적을 잠수함처럼 쫓는 요원" },
+            { role: "기억 추출 다이버", job: "범죄나 사고로 훼손된 타인의 기억 속으로 깊이 잠수하여 진실을 건져내는 수사관" },
+            { role: "디지털 노마드 허브 관리자", job: "국경이 무너진 시대에 전 세계를 떠도는 지식인들을 유연하게 엮어주는 네트워크 리더" },
+            { role: "무의식 치료 상담사", job: "복잡한 현대인의 깊은 내면에 잠긴 트라우마를 유연한 언어로 치유하는 멘토" },
+            { role: "액체 컴퓨터 공학자", job: "딱딱한 실리콘을 넘어 자유자재로 형태가 변하는 수냉식 양자 컴퓨터를 다루는 천재" },
+            { role: "글로벌 수자원 조율사", job: "극심한 가뭄에 시달리는 국가 간의 물 분쟁을 지혜롭게 해결하는 외교관" },
+            // 먼 미래 (Distant Future)
+            { role: "뉴럴 링크 정화 전문가", job: "오염된 인류의 거대 무의식 네트워크에 스며들어 악성 코드를 맑게 씻어내는 정화자" },
+            { role: "딥스페이스 항해사", job: "누구도 가보지 않은 블랙홀 너머의 물길을 심오한 통찰로 찾아내는 선구적 도선사" },
+            { role: "정보 파동 분석가", job: "우주 전체에 파도처럼 흩어진 데이터 입자들을 모아 절대적인 지혜를 완성하는 이" },
+            { role: "행성간 수자원 공급망 리더", job: "물이 말라버린 척박한 행성에 얼음 소행성을 끌어와 생수를 공급하는 흐름의 관리자" },
+            { role: "꿈의 세계 가이드", job: "인류가 동면하는 동안 거대한 무의식의 바다 속에서 안전하게 유영하도록 돕는 자" },
+            { role: "투명성 감사 위원", job: "은하 연합의 모든 정보 흐름이 맑고 막힘없이 유지되는지 감시하는 투명성의 수호자" },
+            { role: "데이터 복구 고고학자", job: "사라진 고대 우주선의 서버 잔해를 복구하여 우주가 잃어버린 기억을 찾아내는 이" },
+            { role: "유연성 사고 교육가", job: "AI의 완벽함에 지친 인류에게 변칙적이고 창의적인 사고방식을 가르치는 스승" },
+            { role: "태초의 진리 전파자", job: "우주의 가장 깊은 심연에서 발견한 생명의 근원적 비밀을 지혜로 승화시켜 전하는 자" },
+            { role: "다중 우주 패턴 해독가", job: "평행 우주 간에 미세하게 흘러들어오는 정보의 겹침을 분석하여 멸망을 막는 학자" }
         ]
     };
 
     const futurePoolEn = {
         "목(木)": [
-            { role: "Planetary Terraforming Architect", job: "specialist restoring endangered species in bio-domes on frontier planets" },
-            { role: "Neural Plant Guardian", job: "system manager connecting human brainwaves with plants to generate oxygen" },
-            { role: "Virtual Reality Gardener", job: "creator of natural zones in the digital world for souls to find rest" },
-            { role: "Bio-Nano Engineer", job: "pioneer extending human lifespan by maximizing cellular regeneration" },
-            { role: "Atmospheric Purification Technician", job: "expert purifying Earth's polluted air with the essence of forests" },
-            { role: "Galactic Seed Vault Manager", job: "the final bastion preserving and distributing life codes across all planets" },
-            { role: "Emotional Arboretum Healer", job: "healer growing plants that bloom by feeding on human sorrow" },
-            { role: "Quantum Ecologist", job: "scholar studying ecological balance between dimensions to aid cosmic coexistence" },
-            { role: "Messenger of the Primal Forest", job: "guide carrying trees possessing Earth's memories to new frontiers" },
-            { role: "Life Sequence Designer", job: "designer perfectly setting the environment for new life forms to be born" }
+            // Near Future
+            { role: "Vertical Farm Master", job: "Ecologist controlling giant urban forests to overcome food shortages" },
+            { role: "AI-Human Symbiosis Coordinator", job: "Expert cultivating ethical and emotional links between AI and humanity" },
+            { role: "Genetic Ark Guardian", job: "Sentinel preserving genetic seeds of endangered species against climate crises" },
+            { role: "Carbon Reverse Engineer", job: "Environmental designer capturing carbon to fertilize the ecosystem" },
+            { role: "Bio-medical Designer", job: "Pioneer eradicating disease and extending lifespans through cell regeneration" },
+            { role: "Ocean Forest Restorer", job: "Marine biologist rebuilding massive coral forests on acidified ocean floors" },
+            { role: "Urban Neural Network Planner", job: "Infrastructure designer helping city energy flow like an organism" },
+            { role: "Eco-dome Architect", job: "Engineer building self-sustaining closed domes in extreme climates" },
+            { role: "Animal Neural Decoder", job: "Researcher translating animal brainwaves to accommodate ecological needs" },
+            { role: "Bionic Prosthetics Engineer", job: "Artisan forging artificial organs that perfectly fuse with human nerves" },
+            // Distant Future
+            { role: "Planetary Terraforming Architect", job: "Creator establishing atmospheres and ecosystems in bio-domes on barren planets" },
+            { role: "Neural Plant Guardian", job: "Manager controlling planetary oxygen by linking brainwaves with giant flora" },
+            { role: "Virtual Reality Gardener", job: "Builder of digital nature zones for uploaded souls to find rest" },
+            { role: "Galactic Seed Vault Manager", job: "Final bastion loading and spreading life codes of countless planets" },
+            { role: "Emotional Arboretum Healer", job: "Healer growing plants that bloom by feeding on human sorrow" },
+            { role: "Quantum Ecologist", job: "Scholar aiding cosmic coexistence by studying ecological balance across dimensions" },
+            { role: "Messenger of the Primal Forest", job: "Guide transporting the World Tree, holding Earth's ancient memories, to new frontiers" },
+            { role: "Life Sequence Designer", job: "Designer perfectly setting environments for new life forms to be born" },
+            { role: "Nebula Flora Cultivator", job: "Cultivator growing plants of light that absorb interstellar gas" },
+            { role: "Cosmic DNA Weaver", job: "Bio-engineer evolving human genes to adapt to deep space environments" }
         ],
         "화(火)": [
-            { role: "Energy Frequency Tuner", job: "evangelist who unites and amplifies the energies of multi-dimensional civilizations" },
-            { role: "Hologram Enlightener", job: "future teacher spreading forgotten human wisdom through light waves" },
-            { role: "Nebula Power Excavator", job: "key player converting the energy from exploding stars into civilizational power" },
-            { role: "Inter-dimensional Messenger of Light", job: "communication expert delivering messages between dimensions at the speed of light" },
-            { role: "Quantum Sun Manager", job: "manager launching artificial suns on planets that cannot produce their own light" },
-            { role: "Emotional Data Sculptor", job: "master who sublimates human passion into visual light art" },
-            { role: "Hyper-speed Route Designer", job: "navigator shortening interstellar travel time using light refraction" },
-            { role: "Mental Acceleration Optimizer", job: "energy manager upgrading human intelligence to the next level" },
-            { role: "Archivist of Intelligence", job: "recorder storing the brilliant achievements of all civilizations as light particles" },
-            { role: "Galactic Union Ambassador", job: "leader guiding cultural integration between planets with brilliant charisma" }
+            // Near Future
+            { role: "Fusion Energy Controller", job: "Technician producing and controlling limitless clean energy in artificial suns" },
+            { role: "Hologram General Director", job: "Media maestro dictating trends and stimulating senses via augmented reality" },
+            { role: "Stratospheric Shuttle Pilot", job: "Pioneer of hyper-speed aviation networks connecting orbital stations" },
+            { role: "Digital Culture Evangelist", job: "Teacher spreading fading humanities passion and inspiration in cyberspace" },
+            { role: "AI Ethics Philosopher", job: "Defender of human morality amidst uncontrollable technological advancement" },
+            { role: "Plasma Weapon Controller", job: "Security chief guarding the frontline of national defense with hyper-thermal energy" },
+            { role: "Drone Swarm Choreographer", job: "Director painting the night sky with brilliant art using tens of thousands of drones" },
+            { role: "Solar Grid Master", job: "Infrastructure head distributing solar energy through global orbital umbrellas" },
+            { role: "Brain-Computer Interface Designer", job: "Sensory designer connecting human thought to machines at the speed of light" },
+            { role: "Metaverse Idol Producer", job: "Producer forging new idols that thrill the public across virtual and real worlds" },
+            // Distant Future
+            { role: "Energy Frequency Tuner", job: "Evangelist amplifying and uniting the energies of multi-dimensional civilizations" },
+            { role: "Nebula Power Excavator", job: "Key player converting supernova explosion energy into civilizational power" },
+            { role: "Inter-dimensional Light Messenger", job: "Communication expert delivering messages across galaxies at light speed" },
+            { role: "Quantum Sun Manager", job: "Manager launching artificial suns on outer planets that lack light" },
+            { role: "Emotional Data Sculptor", job: "Master sublimating intense human passion into visual light art" },
+            { role: "Hyper-speed Route Designer", job: "Navigator shortening interstellar travel using light refraction and wormholes" },
+            { role: "Mental Acceleration Optimizer", job: "Energy manager upgrading post-human intelligence and intuition" },
+            { role: "Archivist of Intelligence", job: "Recorder storing brilliant achievements of all civilizations as eternal light particles" },
+            { role: "Galactic Union Ambassador", job: "Leader guiding planetary cultural integration with overwhelming charisma" },
+            { role: "Stellar Core Extractor", job: "Extreme adventurer extracting energy from dying stars to light the galaxy" }
         ],
         "토(土)": [
-            { role: "Director of Mars Infrastructure", job: "head official in charge of stabilizing soil and building residential zones" },
-            { role: "Spacetime Data Vault Manager", job: "final manager who heavily protects the vast information of the universe" },
-            { role: "Gravity Balance Coordinator", job: "one who creates the best environment for humanity by adjusting planetary gravity" },
-            { role: "Inter-dimensional Currency Issuer", job: "financial guide building a trusted economic system across the galaxy" },
-            { role: "Cosmic Union Attorney General", job: "judge who adjudicates legal conflicts between planets with unshakable principles" },
-            { role: "Inter-planetary Geological Engineer", job: "one who restabilizes the geology of dying planets to lay the foundation for life" },
-            { role: "Earth Relic Preservationist", job: "one who excavates and protects ancient Earth relics within future civilizations" },
-            { role: "Safe Habitation Zone Designer", job: "designer creating robust shelters that can withstand any cosmic disaster" },
-            { role: "Multi-national Union Historian", job: "historian who fairly records the history of all planets without distortion" },
-            { role: "Continental Vertical City Manager", job: "manager overseeing peaceful residences by maximizing Earth's narrow territory" }
+            // Near Future
+            { role: "Climate Crisis Coordinator", job: "Heavyweight mediator of resource disputes between nations amid extreme weather" },
+            { role: "Megacity Infrastructure Chief", job: "Administrator laying the physical and social foundation for vertical cities" },
+            { role: "Asteroid Mining Base Commander", job: "Leader sustaining Earth's economy by mining rare minerals in orbit" },
+            { role: "Digital Heritage Conservator", job: "Preserver of crucial human data on permanent mediums against server loss" },
+            { role: "Universal Basic Income Architect", job: "Scholar building an economic foundation for coexistence in a jobless AI era" },
+            { role: "Lunar Colony Administrator", job: "Leader establishing order and rules for the first human settlement on the Moon" },
+            { role: "Geo-engineering Supervisor", job: "Protector of survival rights by artificially regulating Earth's crust and currents" },
+            { role: "DeFi Ruler", job: "Builder of a new trust-based currency system as central banks collapse" },
+            { role: "Synthetic Food Distribution Head", job: "Manager preventing famine by culturing alternative food in polluted eras" },
+            { role: "Cybernetics Welfare Officer", job: "Savior embracing the marginalized who cannot afford mechanical body implants" },
+            // Distant Future
+            { role: "Director of Mars Infrastructure", job: "Head official stabilizing the red planet's soil and building solid habitats" },
+            { role: "Spacetime Data Vault Manager", job: "Final manager defending the universe's vast historical data from any attack" },
+            { role: "Gravity Balance Coordinator", job: "Creator of optimal living environments by adjusting artificial planetary gravity" },
+            { role: "Inter-dimensional Currency Issuer", job: "Financial guide building an absolute economic system trusted across the galaxy" },
+            { role: "Cosmic Union Attorney General", job: "Judge silently adjudicating tangled inter-planetary legal conflicts with strict principles" },
+            { role: "Inter-planetary Geological Engineer", job: "Restorer of life's foundation by combining the geology of collapsing planets" },
+            { role: "Earth Relic Preservationist", job: "Guardian who excavates and protects ancient Earth ruins in the distant cosmic era" },
+            { role: "Safe Habitation Zone Designer", job: "Designer creating ultimate shelters capable of withstanding supernova explosions" },
+            { role: "Multi-national Union Historian", job: "Historian recording the history of all planets fairly and heavily, without bias" },
+            { role: "Dyson Sphere Foundation Builder", job: "Architect designing and completing the skeleton of massive structures enclosing stars" }
         ],
         "금(金)": [
-            { role: "Planetary Defense Commander", job: "sentinel protecting civilization from external threats with precise judgment" },
-            { role: "Cyber Law Adjudicator", job: "embodiment of justice who resolutely punishes crimes between virtual and reality" },
-            { role: "Quantum Security Architect", job: "technician building an unhackable, iron-clad information protection system" },
-            { role: "Rare Mineral Scout Leader", job: "explorer finding metals in deep space that will power civilization" },
-            { role: "Android Ethics Supervisor", job: "judge deciding and monitoring the lines that machine intelligence must not cross" },
-            { role: "Dimensional Gate Guardian", job: "sentinel blocking unauthorized dimensional travel and guarding the borders" },
-            { role: "Iron Will Mentor", job: "leader healing human mental weakness with strong willpower" },
-            { role: "Superconductor Component Crafter", job: "artisan precisely forging the metal components at the heart of future tech" },
-            { role: "Space Fleet Auditor", job: "audit expert who keenly identifies whether all systems comply with regulations" },
-            { role: "Decision-making Amplifier Trainer", job: "operator of neural training systems that enhance decision-making in critical moments" }
+            // Near Future
+            { role: "Cyber Security Commander", job: "Sentinel defending and tracking fatal hacking attacks aimed at national infrastructure" },
+            { role: "Autonomous Weapon Arbiter", job: "Cold executor holding the final authority over AI weapons and bioethics" },
+            { role: "Genetic Modification Inspector", job: "Investigator resolutely tracking and punishing illegal body mods and cloning" },
+            { role: "Orbital Debris Cleanser", job: "Precision striker protecting orbital safety by intercepting dangerous space junk" },
+            { role: "Deep-sea Resource Extractor", job: "Cold-headed leader mining resources under the most severe pressures" },
+            { role: "Algorithm Bias Judge", job: "Judge sharply excising the logical errors and discrimination of controlling AIs" },
+            { role: "Bionic Transplant Surgeon", job: "Precision specialist flawlessly combining human bodies with steel machinery" },
+            { role: "Nano-robotics Controller", job: "Medical scientist assassinating diseases by commanding billions of nano-robots in the body" },
+            { role: "Space Elevator Engineer", job: "Manager flawlessly maintaining tens of thousands of kilometers of steel cables to space" },
+            { role: "Climate Treaty Enforcer", job: "Iron-blooded manager ruthlessly sanctioning corporations violating carbon emissions" },
+            // Distant Future
+            { role: "Planetary Defense Commander", job: "Military head guarding civilization's shield against asteroid impacts and alien threats" },
+            { role: "Cyber Law Adjudicator", job: "Embodiment of justice resolutely punishing high-level crimes crossing virtual and reality" },
+            { role: "Quantum Security Architect", job: "Technician building ironclad info-protection systems unhackable by any quantum computer" },
+            { role: "Rare Mineral Scout Leader", job: "Ice-cold explorer finding the ultimate metal to power fleets in deep space" },
+            { role: "Android Ethics Supervisor", job: "Strict judge drawing lines and inspecting so machine intelligence doesn't surpass humanity" },
+            { role: "Dimensional Gate Guardian", job: "Sentinel blocking unauthorized dimensional travel with beam weapons to guard borders" },
+            { role: "Iron Will Mentor", job: "Leader healing post-human mental fragility through destructively intense training" },
+            { role: "Superconductor Component Crafter", job: "Artisan precisely forging absolute-zero metal components for future tech" },
+            { role: "Space Fleet Auditor", job: "Flawless audit expert keenly digging into compliance across the Galactic Union" },
+            { role: "Decision-making Amplifier Trainer", job: "Neural system operator helping commanders decide without hesitation at critical moments" }
         ],
         "수(水)": [
-            { role: "Neural Link Purification Specialist", job: "purifier who cleanses the polluted subconscious networks of humanity" },
-            { role: "Deep Space Navigator", job: "pioneering pilot finding paths beyond black holes with profound insight" },
-            { role: "Information Wave Analyst", job: "one who completes wisdom by gathering data particles scattered across the universe" },
-            { role: "Subconscious Therapy Counselor", job: "healer who flexibly treats trauma submerged in the deep psyche" },
-            { role: "Inter-planetary Water Coordinator", job: "manager of massive flows supplying water resources to parched planets" },
-            { role: "Dreamworld Guide", job: "one who helps humanity swim safely through their subconscious while asleep" },
-            { role: "Transparency Audit Commissioner", job: "guardian of transparency monitoring the flow of information remains clear" },
-            { role: "Data Recovery Archeologist", job: "one finding lost memories by recovering ancient Earth servers" },
-            { role: "Flexible Thinking Educator", job: "future teacher who breaks stereotypes and lets creative thinking flow" },
-            { role: "Propagator of Primal Truth", job: "one who sublimates the ultimate secrets found at the edge of the universe into wisdom" }
+            // Near Future
+            { role: "Big Data Oracle", job: "Prophet reading future patterns for humanity in an endless sea of data" },
+            { role: "Deep-sea City Architect", job: "Architect building deep-sea habitats for humanity on an Earth submerged by rising sea levels" },
+            { role: "Cryogenic Awakening Therapist", job: "Healer smoothly curing the temporal alienation of those waking from long cryogenic sleep" },
+            { role: "AI Algorithm Philosopher", job: "Thinker fusing humanities' wisdom and human essence into cold data" },
+            { role: "Virtual Identity Tracker", job: "Agent chasing traces of cybercriminals hidden under disguises like a submarine" },
+            { role: "Memory Extraction Diver", job: "Investigator diving deep into damaged memories to salvage the truth" },
+            { role: "Digital Nomadic Hub Manager", job: "Network leader flexibly connecting wandering intellectuals in a borderless era" },
+            { role: "Subconscious Therapy Counselor", job: "Mentor healing the deep traumas of complex modern people with fluent language" },
+            { role: "Liquid Computer Engineer", job: "Genius handling shape-shifting, water-cooled quantum computers beyond rigid silicon" },
+            { role: "Global Water Grid Coordinator", job: "Diplomat wisely resolving water disputes between nations suffering severe droughts" },
+            // Distant Future
+            { role: "Neural Link Purification Specialist", job: "Purifier permeating the polluted subconscious network to wash away malicious code" },
+            { role: "Deep Space Navigator", job: "Pioneering pilot finding water routes beyond black holes with profound insight" },
+            { role: "Information Wave Analyst", job: "One who completes absolute wisdom by gathering data particles scattered like waves" },
+            { role: "Inter-planetary Water Supply Leader", job: "Flow manager delivering fresh water to parched planets by towing ice asteroids" },
+            { role: "Dreamworld Guide", job: "One who helps humanity swim safely in the giant sea of the subconscious during hibernation" },
+            { role: "Transparency Audit Commissioner", job: "Guardian of transparency monitoring that all info flows in the galaxy remain clear" },
+            { role: "Data Recovery Archeologist", job: "One finding the universe's lost memories by recovering servers from ancient shipwrecks" },
+            { role: "Flexible Thinking Educator", job: "Teacher imparting erratic, creative thinking to humans exhausted by AI's perfection" },
+            { role: "Propagator of Primal Truth", job: "One who sublimates and transmits the fundamental secrets of life found at the universe's edge" },
+            { role: "Multiverse Pattern Decoder", job: "Scholar preventing extinction by analyzing subtle information overlaps between parallel universes" }
         ]
     };
 
+    // 💡 [과업 확장] 50개의 다양하고 구체적인 미래 시나리오 (0~24: 근미래풍, 25~49: 먼미래풍)
     const missionsKo = [
-        "지구의 멸종 위기 식물 유전자를 행성 X로 이식하십시오.", "화성의 물 부족 현상을 해결할 결빙 핵 기술을 전달하십시오.", "분열된 달 거주지들 사이의 평화 조약을 체결하십시오.",
-        "인공지능과 인류 사이의 감정적 갈등을 중재하고 화해시키십시오.", "100년 전 손실된 인류의 디지털 기억을 복구하십시오.", "신개척 행성에 세워질 첫 번째 도서관의 책을 선별하십시오.",
-        "지구 자기장의 불균형을 막아 대기 붕괴를 저지하십시오.", "미래 세대를 위한 완벽한 산소 공급 시스템을 설계하십시오.", "행성 간 이동 중 발생하는 시공간 멀미를 치료하는 주파수를 찾으십시오.",
-        "안드로이드들에게 '인간의 따스함'을 가르치는 교육 프로그램을 완성하십시오.", "지구 바다의 오염된 나노 입자들을 정화하는 임무를 수행하십시오.", "달의 먼지를 이용해 거대한 에너지 패널을 건설하십시오.",
-        "다른 은하계에서 온 미지의 조난 신호를 최초로 수신하십시오.", "인류의 마지막 남은 천연 숲을 보존하는 파수꾼이 되십시오.", "우주 정거장의 노후된 중력 발생 장치를 교체하십시오.",
-        "지구형 행성 탐사대의 정신적 안정을 돕는 상담 시스템을 운영하십시오.", "행성 간 무역에서 발생하는 불공정 거래를 감시하십시오.", "사라진 미래 도시 'New-뉴욕'의 지도를 다시 그리십시오.",
-        "시공간 가속 장치의 과부하를 막아 차원의 균형을 지키십시오.", "인류가 거주할 새로운 지하 도시의 광원 시스템을 설치하십시오.", "외계 지성체와의 최초의 문화 교류 축제를 기획하십시오.",
-        "화성 토양에 자랄 수 있는 하이브리드 종자를 배양하십시오.", "우주의 모든 소리를 수집하여 지구의 옛 노래를 복원하십시오.", "환생 시스템의 데이터 오류를 수정하여 영혼들을 구제하십시오.",
-        "성운의 에너지를 모아 인공 태양을 점화하는 작업에 참여하십시오.", "미래의 인류가 겪을 지독한 고독을 치유할 콘텐츠를 제작하십시오.", "스스로 빛을 내지 못하는 개척지에 지혜의 빛을 전하십시오.",
-        "우주의 끝에서 날아오는 정체불명의 방사능을 차단하십시오.", "감정의 불균형으로 무너지는 돔 도시의 정신을 재건하십시오.", "영원한 평화와 공존의 시나리오를 완성하십시오."
+        "지구의 마지막 종자 은행을 해킹의 위협으로부터 오차 없이 방어하십시오.",
+        "수몰 위기에 처한 해안 도시의 시민들을 지하 돔으로 안전하게 이주시키십시오.",
+        "인공지능의 윤리적 편향성을 바로잡기 위한 새로운 헌장을 기안하십시오.",
+        "달 기지에서 발생한 원인 불명의 자원 유출 사태를 은밀하게 조사하십시오.",
+        "기후 난민들을 수용하기 위한 거대한 부유식 해상 도시를 설계하십시오.",
+        "인간의 기억을 데이터로 업로드하는 과정에서 발생하는 영혼의 상실을 치료하십시오.",
+        "가상 현실 중독에 빠진 세대에게 아날로그적 삶의 가치를 되찾아 주십시오.",
+        "기계 신체를 이식받은 신인류와 순수 구인류 사이의 사회적 갈등을 중재하십시오.",
+        "오염된 토양을 스스로 정화하는 나노 박테리아의 대규모 살포 작전을 지휘하십시오.",
+        "궤도 엘리베이터 건설 현장에서 발생한 파벌 간의 이권 다툼을 조율하십시오.",
+        "국가를 대체할 새로운 다국적 메가 코퍼레이션의 공정 거래 룰을 확립하십시오.",
+        "합성 식량의 독점 배급망을 뚫고 굶주린 빈민가에 식량을 분배하십시오.",
+        "심해 자원 채굴 중 발견된 미지의 고대 생명체를 연구하고 보호하십시오.",
+        "뇌파 해킹으로 타인을 조종하려는 신흥 사이버 테러 조직을 붕괴시키십시오.",
+        "방치된 우주 쓰레기를 수거하여 거대한 궤도 발전소로 재활용하십시오.",
+        "인간의 감정을 통제하려는 불법적인 칩 이식 시술을 적발하고 금지하십시오.",
+        "점점 희미해져 가는 인류의 문학적, 예술적 유산을 디지털 아카이브로 구축하십시오.",
+        "초고속 성층권 여객기의 항로 이탈 사고를 막을 새로운 네비게이션을 완성하십시오.",
+        "수명 연장 기술의 혜택을 받지 못한 소외 계층을 위한 복지 시스템을 마련하십시오.",
+        "무분별한 드론 택배망으로 혼란해진 도심 상공의 교통 질서를 바로잡으십시오.",
+        "수질 오염으로 끊어진 국가 간의 식수 파이프라인을 외교적 협상으로 다시 이으십시오.",
+        "실업자가 된 인류에게 기본 소득과 삶의 목적을 동시에 제공하는 프로젝트를 이끄십시오.",
+        "인공 태양의 제어 코드가 폭주하는 것을 막아 도시의 파멸을 막으십시오.",
+        "로봇 경찰의 과잉 진압을 통제할 인간 중심의 사법 감시 기구를 출범시키십시오.",
+        "변이 바이러스에 대항할 범지구적 백신 생산 네트워크를 단기간에 통합하십시오.",
+        // 먼 미래 시나리오
+        "항성 에너지를 빨아들이는 다이슨 스피어의 핵심 코어를 무사히 점화하십시오.",
+        "서로 다른 차원의 지성체들이 처음으로 만나는 범우주적 평화 회담을 주재하십시오.",
+        "소멸을 앞둔 초신성에서 문명을 지탱할 궁극의 에너지를 추출해 탈출하십시오.",
+        "은하 연합의 헌법을 위반하고 독자적 제국을 세우려는 반란 행성을 진압하십시오.",
+        "인공 지성이 스스로 신(God)이 되려 하는 것을 막을 윤리적 논리 폭탄을 투입하십시오.",
+        "블랙홀의 사건의 지평선 근처에서 실종된 탐사 함대의 블랙박스를 회수하십시오.",
+        "테라포밍 중인 행성에서 발생한 돌연변이 식물군의 폭주를 친환경적으로 억제하십시오.",
+        "웜홀을 통한 항해 중 찢겨진 시공간의 균열을 양자 접착 기술로 봉합하십시오.",
+        "육체를 버리고 데이터로 진화하려는 포스트 휴먼 사회의 철학적 부작용을 경고하십시오.",
+        "수만 년 전 멸망한 선지자 종족이 우주 끝에 남긴 진리의 도서관을 개방하십시오.",
+        "행성 간 무역로를 위협하는 우주 해적 함대를 압도적인 전술로 소탕하십시오.",
+        "중력이 붕괴되어 가는 광산 행성의 노동자들을 타임 리미트 내에 구출하십시오.",
+        "태양빛이 닿지 않는 얼음 행성의 심해층에 지열을 이용한 거주 돔을 건설하십시오.",
+        "은하계 전역으로 퍼져나가는 치명적인 정신 오염 주파수를 차단하고 정화하십시오.",
+        "평행 우주에서 넘어온 도플갱어 범죄자들을 식별하여 차원 밖으로 추방하십시오.",
+        "별과 별 사이를 잇는 고차원 텔레파시 네트워크의 데이터 병목 현상을 해결하십시오.",
+        "복제 육체로 영생을 누리는 권력자들의 윤리적 타락을 저지할 시스템을 만드십시오.",
+        "우주의 근원적인 소리를 해독하여 은하계의 기후 변동을 미리 예측하십시오.",
+        "행성의 토착 원시 종족을 착취하려는 거대 자본 함대의 만행을 고발하고 방어하십시오.",
+        "수명이 다한 인공 행성을 안전한 구역으로 견인하여 대규모 충돌을 방지하십시오.",
+        "에테르 차원에서 흘러나오는 미지의 마력 에너지를 과학적 체계로 흡수하십시오.",
+        "은하 의회에 침투한 형체 없는 변형 외계 스파이를 심리전으로 색출하십시오.",
+        "소행성대에 거대한 빛의 조각을 띄워 길 잃은 우주선들을 위한 등대를 세우십시오.",
+        "차원 이동 포탈의 오류로 뒤섞인 과거와 미래의 시간선을 완벽하게 리셋하십시오.",
+        "우주가 수축하기 전, 인류의 모든 기억과 생명 코드를 담은 방주를 띄우십시오."
     ];
 
     const missionsEn = [
-        "Transplant endangered Earth plant genes to Planet X.", "Deliver ice-core technology to solve water shortages on Mars.", "Sign a peace treaty between divided Lunar colonies.",
-        "Mediate emotional conflicts between AI and humanity.", "Recover human digital memories lost 100 years ago.", "Select books for the first library on a newly colonized planet.",
-        "Prevent atmospheric collapse by stabilizing Earth's magnetic field.", "Design a perfect oxygen supply system for future generations.", "Find frequencies to cure spacetime sickness during travel.",
-        "Teach androids the 'warmth of humanity' through education.", "Purify polluted nano-particles in Earth's oceans.", "Construct giant energy panels using lunar dust.",
-        "Receive the first distress signal from a distant galaxy.", "Guard Earth's last remaining natural forests.", "Replace outdated gravity generators on the space station.",
-        "Operate counseling systems for planetary explorers' mental health.", "Monitor unfair trade in interplanetary commerce.", "Redraw the map of the lost city 'New-New York'.",
-        "Block unauthorized dimensional interference to protect the balance.", "Install light systems for new underground cities.", "Organize the first cultural exchange festival with extraterrestrials.",
-        "Cultivate hybrid seeds that can grow in Martian soil.", "Restore ancient Earth songs by collecting cosmic sounds.", "Correct data errors in the reincarnation system.",
-        "Participate in igniting an artificial sun using nebula energy.", "Create content to heal the profound loneliness of future humans.", "Deliver the flame of wisdom to dark colonies.",
-        "Block unidentified radiation coming from the edge of space.", "Rebuild the spirit of dome cities collapsing from emotional imbalance.", "Complete the cycle of eternal life."
+        "Defend Earth's last seed bank from hacking threats without error.", "Safely relocate citizens of coastal cities facing submersion to underground domes.", "Draft a new charter to correct the ethical bias of AI.", "Secretly investigate the unexplained resource leak at the Lunar Base.", "Design a massive floating sea city to accommodate climate refugees.", "Treat the 'loss of soul' occurring when human memories are uploaded as data.", "Restore the value of analog life to a generation addicted to VR.", "Mediate social conflict between pure humans and cyborg-enhanced neo-humans.", "Command a large-scale dispersion of nano-bacteria that purify polluted soil.", "Tune factional rights disputes at the orbital elevator construction site.", "Establish fair trade rules for a new multi-national mega-corporation replacing states.", "Break the monopoly of synthetic food and distribute it to starving slums.", "Research and protect an unknown ancient life form found during deep-sea mining.", "Collapse a cyber-terrorist group trying to control others via brainwave hacking.", "Collect abandoned space debris and recycle it into a giant orbital power plant.", "Detect and ban illegal chip implant procedures aiming to control human emotions.", "Build a digital archive of humanity's fading literary and artistic heritage.", "Complete new navigation to prevent off-route accidents of stratospheric jets.", "Create a welfare system for the marginalized lacking life-extension tech.", "Restore traffic order in urban skies confused by reckless drone deliveries.", "Re-connect international water pipelines severed by pollution via diplomacy.", "Lead a project providing basic income and life purpose to jobless humanity.", "Prevent city ruin by stopping the runaway control codes of the artificial sun.", "Launch a human-centric judicial watchdog to control over-suppression by robot police.", "Rapidly integrate a global vaccine network against mutant viruses.",
+        // Distant Future
+        "Safely ignite the core of a Dyson Sphere absorbing stellar energy.", "Preside over a cosmic peace summit between extra-dimensional intelligences.", "Extract ultimate energy from a dying supernova to sustain civilization.", "Suppress a rebel planet violating Galactic Union laws to build an empire.", "Deploy an ethical logic bomb to stop artificial intelligence from becoming a God.", "Recover the black box of an exploration fleet lost near a black hole's event horizon.", "Eco-friendly suppress the runaway mutant flora on a terraforming planet.", "Seal spacetime rifts torn during wormhole travel with quantum adhesive.", "Warn against the philosophical side effects of evolving into pure data.", "Open the Library of Truth left at the universe's edge by a fallen ancient race.", "Eradicate space pirate fleets threatening interplanetary trade routes with tactics.", "Rescue workers on a mining planet with collapsing gravity within the time limit.", "Build a geothermal residential dome in the deep sea of an ice planet.", "Block and purify a fatal mental-pollution frequency spreading across the galaxy.", "Identify and deport doppelganger criminals from parallel universes.", "Resolve data bottlenecks in the high-dimensional telepathy network between stars.", "Create a system to stop the ethical corruption of immortals using cloned bodies.", "Predict galactic climate shifts by decoding the primal sounds of the universe.", "Expose and defend against capital fleets exploiting indigenous planetary races.", "Tow an expired artificial planet to a safe zone to prevent a massive collision.", "Absorb unknown magical energy flowing from the ether dimension into science.", "Sniff out formless shapeshifter alien spies infiltrated into the Galactic Senate.", "Erect a lighthouse of giant light shards in the asteroid belt for lost ships.", "Perfectly reset timelines mixed up by errors in dimensional portals.", "Launch an ark containing all human memories and life codes before the universe contracts."
     ];
 
     const elKeyEn = { "목(木)": "Wood", "화(火)": "Fire", "토(土)": "Earth", "금(金)": "Metal", "수(水)": "Water" }[signature];
 
+    // 💡 [시간대 식별 로직] num % 20을 통해 0~9는 근미래, 10~19는 먼미래로 맵핑
+    const roleIndex = num % 20;
+    const isDistantFuture = roleIndex >= 10;
+    
+    // 시대적 배경 수식어 동적 생성
+    const timeHorizonKo = isDistantFuture ? "아득히 먼 은하계 시대" : "가까운 근미래";
+    const timeHorizonEn = isDistantFuture ? "the distant galactic era" : "the near future";
+
     const pool = lang === 'ko' ? futurePoolKo[signature] : futurePoolEn[signature];
-    const match = pool[num % 10];
-    const mission = lang === 'ko' ? missionsKo[num % 30] : missionsEn[num % 30];
+    const match = pool[roleIndex];
+    
+    // 미션(과업)도 시간대에 맞춰 매칭 (0~24: 근미래, 25~49: 먼미래)
+    // roleIndex가 10 미만(근미래)이면 0~24번 배열에서, 10 이상(먼미래)이면 25~49번 배열에서 랜덤 추출
+    const missionBase = isDistantFuture ? 25 : 0;
+    const missionIndex = missionBase + (num % 25);
+    const mission = lang === 'ko' ? missionsKo[missionIndex] : missionsEn[missionIndex];
 
     if (lang === 'ko') {
         return {
             job: match.role,
-            desc: `운명공학 분석 결과, 당신의 내세는 <b>${signature}</b>의 에너지가 주도합니다. 이 영향으로 <b>${match.job}</b>(으)로 활동할 운명입니다.`,
+            desc: `운명공학 분석 결과, 당신의 내세는 <b>${signature}</b>의 에너지가 주도합니다. 이 영향으로 다가올 <b>${timeHorizonKo}</b>에 <b>[${match.job}]</b>(으)로 활동할 운명입니다.`,
             mission: mission
         };
     } else {
         return {
             job: match.role,
-            desc: `According to the destiny analysis, your afterlife will be driven by <b>${elKeyEn}</b> energy. Under this influence, you will be <b>${match.job}</b>.`,
+            desc: `According to the destiny analysis, your afterlife will be driven by <b>${elKeyEn}</b> energy. Under this influence, you are destined to act as <b>[${match.job}]</b> in <b>${timeHorizonEn}</b>.`,
             mission: mission
         };
     }
